@@ -9,8 +9,10 @@ from fastapi.responses import HTMLResponse, JSONResponse
 
 from .io_utils import load_grayscale_png, load_weights_json
 from .pipeline import run_pipeline
+from .refine_web import router as refine_router
 
 app = FastAPI(title="路面裂缝两层卷积边缘分块演示", version="1.0.0")
+app.include_router(refine_router)
 
 PAGE = """<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -33,6 +35,7 @@ PAGE = """<!doctype html>
  code{background:#eef2f7;padding:.1rem .35rem;border-radius:4px}
 </style></head><body>
 <h1>路面裂缝两层卷积 · 边缘分块尺寸选型（NumPy float64）</h1>
+<p class="note">另一工具：<a href="/refine"><b>裂缝判定复核修正（冻结首层、定点微调第二层）→</b></a></p>
 <p class="note">结构固定：Conv 1→4，3×3，stride 2，pad 1，ReLU；Conv 4→1，3×3，
 stride 1，dilation 2，pad 2。图像为每边 ≤512 的灰度 PNG。
 预算按覆盖每个输出块所需的<b>图内激活最小矩形窗口</b>（含通道）计算，

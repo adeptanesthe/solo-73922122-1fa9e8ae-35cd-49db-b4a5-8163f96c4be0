@@ -9,10 +9,11 @@ import numpy as np
 from PIL import Image
 
 MAX_SIDE = 512
+REFINE_MAX_SIDE = 128
 
 
-def load_grayscale_png(data: bytes) -> np.ndarray:
-    """读取上传的 PNG，要求灰度模式，每边 <= 512，返回 float64 二维数组。
+def load_grayscale_png(data: bytes, max_side: int = MAX_SIDE) -> np.ndarray:
+    """读取上传的 PNG，要求灰度模式，每边 <= max_side，返回 float64 二维数组。
 
     像素值归一化到 [0,1]。拒绝多通道（RGB/RGBA/P）等非灰度图像。
     """
@@ -27,9 +28,9 @@ def load_grayscale_png(data: bytes) -> np.ndarray:
         raise ValueError(f"只接受 PNG 图像，收到 {im.format}")
     if im.mode != "L":
         raise ValueError(f"只接受灰度 PNG（mode=L），收到 mode={im.mode}")
-    if im.width > MAX_SIDE or im.height > MAX_SIDE:
+    if im.width > max_side or im.height > max_side:
         raise ValueError(
-            f"图像每边至多 {MAX_SIDE} 像素，收到 {im.width}x{im.height}")
+            f"图像每边至多 {max_side} 像素，收到 {im.width}x{im.height}")
     arr = np.asarray(im, dtype=np.float64) / 255.0
     return arr
 
